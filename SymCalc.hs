@@ -15,7 +15,7 @@ module SymCalc
 
 import Data.Either
 
-infixl 4 :+:
+infixl 4 :+:, :-:
 infixl 5 :/:, :*:
 infixr 6 :^:
 
