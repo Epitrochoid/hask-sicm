@@ -5,33 +5,24 @@ module UDTup
 import Data.Either
 
 data UDTup a = Val a
-             | Up (UDTup a)
-             | Down (UDTup a)
-             | Up2 (UDTup a) (UDTup a)
-             | Down2 (UDTup a) (UDTup a)
+             | Up [UDTup a]
+             | Down [UDTup a]
              | Undef String
              deriving (Show)
 
 instance (Num a) => Num (UDTup a) where
+        -- Addition
         (Val a) + (Val b) = Val $ a + b
-        (Up a) + (Up b) = Up $ a + b
-        (Up2 a b) + (Up2 c d) = Up2  (a+c) (b+d)
-        (Down a) + (Down b) = Down $ a + b
-        (Down2 a b) + (Down2 c d) = Down2  (a+c) (b+d)
-        (Val _) + _ = Undef "Sum error"
-        (Up _) + _ = Undef "Sum error"
-        (Up2 _ _) + _ = Undef "Sum error"
-        (Down _) + _ = Undef "Sum error"
-        (Down2 _ _) + _ = Undef "Sum error"
+        (Up a) + (Up b) = Up $ zipWith (+) a b
+        (Down a) + (Down b) = Down $ zipWith (+) a b
+        (Up _) + (Down _) = Undef "Cannot add Up and Down tuple"
+        (Down _) + (Up _) = Undef "Cannot add Down and Up tuple"
+        (Up _) + (Val _) = Undef "Cannot add Up tuple to value"
+        (Val _) + (Up _) = Undef "Cannot add value to Up tuple"
+        (Down _) + (Val _) = Undef "Cannot add Down tuple to value"
+        (Val _) + (Down _) = Undef "Cannot add value to Down tuple"
+        (Undef a) + _ = a
+        _ + (Undef a) = a
+        -- Subtraction
         (Val a) - (Val b) = Val $ a - b
-        (Up a) - (Up b) = Up $ a - b
-        (Up2 a b) - (Up2 c d) = Up2  (a-c) (b-d)
-        (Down a) - (Down b) = Down $ a - b
-        (Down2 a b) - (Down2 c d) = Down2  (a-c) (b-d)
-        (Val _) - _ = Undef "Difference error"
-        negate = undefined
-        abs = undefined
-        fromInteger a = Val (fromInteger a)
-
-
 
