@@ -87,12 +87,16 @@ instance (Show a) => Show (Expr a) where
         show E = "e"
         show (Const a) = show a
 
-simplify :: (Num a) =>  Expr a -> Expr a
+simplify :: (Num a, Eq a) =>  Expr a -> Expr a
 simplify expr = simplify' expr (Const 0)
     where
         simplify' expr0 expr1 | expr0 == expr1 = expr0
-                              | otherwise = simplify' expr0 (simplify'' expr0)
+                              | otherwise = simplify' (simplify'' expr0) expr0
 
-simplify'' :: (Num a) => Expr a -> Expr a
+simplify'' :: (Num a, Eq a) => Expr a -> Expr a
+simplify'' (Const a :+: Const b) = Const $ a + b
+
+simplify'' (a :+: b) = (simplify a) + (simplify b)
+simplify'' a = id a
 
 
